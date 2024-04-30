@@ -50,10 +50,10 @@
 
 @layer base {
   * {
-    @apply box-border; // Apply box-sizing: border-box; to all elements
+    @apply box-border;
   }
 
   body {
-    @apply text-foreground antialiased; // Apply text color (shadcn) and font smoothing
+    @apply text-foreground antialiased;
   }
 }
