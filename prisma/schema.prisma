@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id                  String     @id @default(uuid())
+  name                String
+  imageURL            String
+  deliveryFee         Decimal    @db.Decimal(10, 2)
+  deliveryTimeMinutes Int
+  category            Category[] // A restaurant can have many categories (Many to Many)
+  product             Product[] // A restaurant can have many products
+}
+
+model Category {
+  id          String       @id @default(uuid())
+  name        String
+  imageURL    String
+  restaurants Restaurant[] // A category can have many restaurants (Many to Many) 
+  product     Product[]
+}
+
+model Product {
+  id                 String     @id @default(uuid())
+  name               String
+  description        String
+  imageURL           String
+  price              Decimal    @db.Decimal(10, 2)
+  discountPercentage Int        @default(0)
+  restaurantId       String
+  restaurant         Restaurant @relation(fields: [restaurantId], references: [id]) // Cria uma relação com a tabela Restaurant, onde 'restaurantId' nesta tabela corresponde ao 'id' na tabela Restaurant.
+  categoryId         String
+  category           Category   @relation(fields: [categoryId], references: [id])
+}
