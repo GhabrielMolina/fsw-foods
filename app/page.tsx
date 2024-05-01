@@ -5,8 +5,26 @@ import Search from "./_components/search";
 import ProductList from "./_components/product-list";
 import { Button } from "./_components/ui/button";
 import { ChevronRightIcon } from "lucide-react";
+import { db } from "./_lib/prisma";
 
-const Home = () => {
+const Home = async () => {
+  const products = await db.product.findMany({
+    where: {
+      // Filtrar produtos com desconto (Buscar produtos ONDE o DESCONTO é MAIOR que 0)
+      discountPercentage: {
+        gt: 0,
+      },
+    },
+    take: 10, // Limitar a 10 produtos
+    include: {
+      restaurant: {
+        select: {
+          name: true,
+        }, // Selecionar apenas o nome do restaurante
+      },
+    },
+  });
+
   return (
     <>
       <Header />
@@ -41,7 +59,7 @@ const Home = () => {
             <ChevronRightIcon size={16} />
           </Button>
         </div>
-        <ProductList />
+        <ProductList products={products} />
       </div>
     </>
   );
