@@ -23,6 +23,7 @@ model Category {
   imageUrl    String
   restaurants Restaurant[] // A category can have many restaurants
   products    Product[] // A category can have many products
+  createdAt   DateTime     @default(now())
 }
 
 model Product {
@@ -36,4 +37,5 @@ model Product {
   restaurant         Restaurant @relation(fields: [restaurantId], references: [id]) // Cria uma relação com a tabela Restaurant, onde 'restaurantId' nesta tabela corresponde ao 'id' na tabela Restaurant.
   categoryId         String
   category           Category   @relation(fields: [categoryId], references: [id])
+  createdAt          DateTime   @default(now())
 }
