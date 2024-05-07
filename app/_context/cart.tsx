@@ -27,7 +27,11 @@ interface ICardContext {
   subtotalPrice: number;
   totalPrice: number;
   totalDiscounts: number;
-  addProductToCart: (
+  addProductToCart: ({
+    product,
+    quantity,
+    emptyCart,
+  }: {
     product: Prisma.ProductGetPayload<{
       include: {
         restaurant: {
@@ -36,9 +40,10 @@ interface ICardContext {
           };
         };
       };
-    }>,
-    quantity: number,
-  ) => void;
+    }>;
+    quantity: number;
+    emptyCart?: boolean;
+  }) => void;
   decreaseProductQuantity: (productId: string) => void;
   increaseProductQuantity: (productId: string) => void;
   removeProductFromCart: (productId: string) => void;
@@ -69,9 +74,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   // Calcular o preço total dos produtos no carrinho de compras com base no preço total de cada produto e a quantidade de cada produto
   const totalPrice = useMemo(() => {
-    return products.reduce((acc, product) => {
-      return acc + calculateProductTotalPrice(product) * product.quantity;
-    }, 0);
+    return (
+      products.reduce((acc, product) => {
+        return acc + calculateProductTotalPrice(product) * product.quantity;
+      }, 0) + Number(products?.[0]?.restaurant?.deliveryFee)
+    );
   }, [products]);
 
   const totalDiscounts = subtotalPrice - totalPrice;
@@ -116,7 +123,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Função que adiciona um produto ao carrinho de compras com uma quantidade inicial de 0 (zero) e atualiza o estado dos produtos
-  const addProductToCart = (
+  const addProductToCart = ({
+    product,
+    quantity,
+    emptyCart,
+  }: {
     product: Prisma.ProductGetPayload<{
       include: {
         restaurant: {
@@ -125,9 +136,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           };
         };
       };
-    }>,
-    quantity: number,
-  ) => {
+    }>;
+    quantity: number;
+    emptyCart?: boolean;
+  }) => {
+    if (emptyCart) {
+      setProducts([]);
+    }
+
     // Verificar se o produto já está no carrinho de compras
     const isProductAlreadyOnCart = products.some(
       (cartProduct) => cartProduct.id === product.id,
