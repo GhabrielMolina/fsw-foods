@@ -81,7 +81,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   }, [products]);
 
-  const totalDiscounts = subtotalPrice - totalPrice;
+  const totalDiscounts =
+    subtotalPrice - totalPrice + Number(products?.[0]?.restaurant?.deliveryFee);
 
   // Função que diminui a quantidade de um produto no carrinho de compras e atualiza o estado dos produtos
   const decreaseProductQuantity = (productId: string) => {
