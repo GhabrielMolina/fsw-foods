@@ -142,6 +142,9 @@ const Cart = ({ setIsOpen }: CartProps) => {
               disabled={isSubmitLoading}
               onClick={() => setIsConfirmDialogOpen(true)}
             >
+              {isSubmitLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Finalizar Pedido
             </Button>
           </>
@@ -167,9 +170,6 @@ const Cart = ({ setIsOpen }: CartProps) => {
               disabled={isSubmitLoading}
               onClick={handleFinishedOrderClick}
             >
-              {isSubmitLoading && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
               Finalizar
             </AlertDialogAction>
           </AlertDialogFooter>
