@@ -9,6 +9,8 @@ import { createOrder } from "../_actions/order";
 import { OrderStatus } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -19,8 +21,14 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
 } from "./ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
-const Cart = () => {
+interface CartProps {
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+const Cart = ({ setIsOpen }: CartProps) => {
+  const router = useRouter();
   const { data } = useSession();
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -62,6 +70,16 @@ const Cart = () => {
         },
       });
       clearCart();
+      setIsOpen(false);
+
+      toast("Pedido realizado com sucesso!", {
+        description:
+          "Você pode acompanhar o status do seu pedido na aba 'Meus Pedidos'.",
+        action: {
+          label: "Meus pedidos",
+          onClick: () => router.push("/my-orders"),
+        },
+      });
     } catch (error) {
       console.error("Error creating order", error);
     } finally {
