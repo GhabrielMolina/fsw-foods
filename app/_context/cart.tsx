@@ -13,6 +13,8 @@ export interface CartProduct
     include: {
       restaurant: {
         select: {
+          id: true;
+          deliveryTimeMinutes: true;
           deliveryFee: true;
         };
       };
@@ -24,7 +26,7 @@ export interface CartProduct
 // Interface que define o formato do contexto do carrinho de compras (ICardContext) com um array de produtos (products) e uma função para adicionar produtos ao carrinho (addProductToCart)
 interface ICardContext {
   products: CartProduct[];
-  subtotalPrice: number;
+  subTotalPrice: number;
   totalPrice: number;
   totalDiscounts: number;
   totalQuantity: number;
@@ -37,6 +39,8 @@ interface ICardContext {
       include: {
         restaurant: {
           select: {
+            id: true;
+            deliveryTimeMinutes: true;
             deliveryFee: true;
           };
         };
@@ -48,12 +52,13 @@ interface ICardContext {
   decreaseProductQuantity: (productId: string) => void;
   increaseProductQuantity: (productId: string) => void;
   removeProductFromCart: (productId: string) => void;
+  clearCart: () => void;
 }
 
 // Criar o contexto do carrinho de compras com um valor inicial vazio e uma função vazia para adicionar produtos ao carrinho de compras (addProductToCart) e exportar o contexto
 export const CartContext = createContext<ICardContext>({
   products: [],
-  subtotalPrice: 0,
+  subTotalPrice: 0,
   totalPrice: 0,
   totalDiscounts: 0,
   totalQuantity: 0,
@@ -61,6 +66,7 @@ export const CartContext = createContext<ICardContext>({
   decreaseProductQuantity: () => {},
   increaseProductQuantity: () => {},
   removeProductFromCart: () => {},
+  clearCart: () => {},
 });
 
 // Componente que provê o contexto do carrinho de compras para os componentes filhos com os produtos e a função para adicionar produtos ao carrinho de compras
@@ -68,7 +74,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<CartProduct[]>([]);
 
   // Calcular o preço total de um produto no carrinho de compras com base no preço total do produto e a quantidade do produto
-  const subtotalPrice = useMemo(() => {
+  const subTotalPrice = useMemo(() => {
     return products.reduce((acc, product) => {
       return acc + Number(product.price) * product.quantity;
     }, 0);
@@ -90,7 +96,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [products]);
 
   const totalDiscounts =
-    subtotalPrice - totalPrice + Number(products?.[0]?.restaurant?.deliveryFee);
+    subTotalPrice - totalPrice + Number(products?.[0]?.restaurant?.deliveryFee);
+
+  const clearCart = () => {
+    return setProducts([]);
+  };
 
   // Função que diminui a quantidade de um produto no carrinho de compras e atualiza o estado dos produtos
   const decreaseProductQuantity = (productId: string) => {
@@ -185,10 +195,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         decreaseProductQuantity,
         increaseProductQuantity,
         removeProductFromCart,
-        subtotalPrice,
+        subTotalPrice,
         totalPrice,
         totalDiscounts,
         totalQuantity,
+        clearCart,
       }}
     >
       {children}
