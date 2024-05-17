@@ -8,7 +8,7 @@ const RestaurantList = async () => {
   const restaurants = await db.restaurant.findMany({
     take: 10,
   });
-  const useFavoriteRestaurants = await db.userFavoriteRestaurant.findMany({
+  const userFavoriteRestaurants = await db.userFavoriteRestaurant.findMany({
     where: {
       userId: session?.user?.id,
     },
@@ -21,7 +21,7 @@ const RestaurantList = async () => {
           key={restaurant.id}
           restaurant={restaurant}
           userId={session?.user?.id}
-          useFavoriteRestaurants={useFavoriteRestaurants}
+          userFavoriteRestaurants={userFavoriteRestaurants}
         />
       ))}
     </div>
