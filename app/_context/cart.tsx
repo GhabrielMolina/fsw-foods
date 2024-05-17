@@ -26,7 +26,7 @@ export interface CartProduct
 // Interface que define o formato do contexto do carrinho de compras (ICartContext) com um array de produtos (products) e uma função para adicionar produtos ao carrinho (addProductToCart)
 interface ICartContext {
   products: CartProduct[];
-  subotalPrice: number;
+  subTotalPrice: number;
   totalPrice: number;
   totalDiscounts: number;
   totalQuantity: number;
@@ -46,7 +46,7 @@ interface ICartContext {
 // Criar o contexto do carrinho de compras com um valor inicial vazio e uma função vazia para adicionar produtos ao carrinho de compras (addProductToCart) e exportar o contexto
 export const CartContext = createContext<ICartContext>({
   products: [],
-  subotalPrice: 0,
+  subTotalPrice: 0,
   totalPrice: 0,
   totalDiscounts: 0,
   totalQuantity: 0,
@@ -62,7 +62,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<CartProduct[]>([]);
 
   // Calcular o preço total de um produto no carrinho de compras com base no preço total do produto e a quantidade do produto
-  const subotalPrice = products.reduce((acc, product) => {
+  const subTotalPrice = products.reduce((acc, product) => {
     return acc + Number(product.price) * product.quantity;
   }, 0);
 
@@ -77,7 +77,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, 0);
 
   const totalDiscounts =
-    subotalPrice - totalPrice + Number(products?.[0]?.restaurant?.deliveryFee);
+    subTotalPrice - totalPrice + Number(products?.[0]?.restaurant?.deliveryFee);
 
   const clearCart = () => {
     return setProducts([]);
@@ -169,7 +169,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         decreaseProductQuantity,
         increaseProductQuantity,
         removeProductFromCart,
-        subotalPrice,
+        subTotalPrice,
         totalPrice,
         totalDiscounts,
         totalQuantity,
